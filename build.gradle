@@ -1,8 +1,8 @@
 plugins {
     id 'java'
+    id 'com.google.protobuf' version '0.9.4'
 }
 
-group 'org.example'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -10,8 +10,77 @@ repositories {
 }
 
 dependencies {
+    runtimeOnly 'io.grpc:grpc-netty-shaded:1.68.1'
+    implementation 'io.grpc:grpc-protobuf:1.68.1'
+    implementation 'io.grpc:grpc-stub:1.68.1'
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53' // necessary for Java 9+
+    implementation "com.google.protobuf:protobuf-java-util:3.25.5"
+    implementation "com.google.protobuf:protobuf-java:3.25.5"
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+protobuf {
+    generatedFilesBaseDir = "/Users/ihyein/hil/project/network/grpc_java/src"
+    protoc {
+        if (osdetector.os == "osx") {
+            artifact = 'com.google.protobuf:protoc:3.25.5:osx-x86_64'
+        } else {
+            artifact = 'com.google.protobuf:protoc:3.25.5'
+        }
+//        artifact = "com.google.protobuf:protoc:3.25.5"
+    }
+    plugins {
+        grpc {
+            if (project.hasProperty('protoc_platform')) {
+                artifact = "io.grpc:protoc-gen-grpc-java:1.68.1:osx-x86_64"
+            } else {
+                artifact = "io.grpc:protoc-gen-grpc-java:1.68.1"
+            }
+        }
+//        grpc {
+//            artifact = 'io.grpc:protoc-gen-grpc-java:1.68.1'
+//        }
+    }
+
+    generateProtoTasks {
+//        all()*.plugins {
+//            grpc {}
+//        }
+        //lec-07-prg-02-bidirectional-streaming
+        all().each { task ->
+            task.builtins {
+                java {
+                    outputSubDir = 'java/Lecture_07_gRPC_Source_Code/lec-07-prg-01-hello_gRPC' // Protobuf 메시지 클래스 출력 디렉토리 설정
+                }
+            }
+            task.plugins {
+                grpc {
+                    outputSubDir = 'java/Lecture_07_gRPC_Source_Code/lec-07-prg-01-hello_gRPC' // gRPC 코드 출력 디렉토리 설정
+                }
+            }
+        }
+    }
+}
+sourceSets {
+    main {
+        proto {
+            srcDir 'src/main/java/Lecture_07_gRPC_Source_Code/lec-07-prg-01-hello_gRPC' // 원본 proto 파일 위치
+        }
+        java {
+            srcDir 'src/main/java/Lecture_07_gRPC_Source_Code/lec-07-prg-01-hello_gRPC' // 생성된 코드가 저장될 경로
+        }
+    }
+
+}
+
+
+// 컴파일 태스크가 Protobuf 파일 생성을 포함하도록 의존성 설정
+compileJava {
+    doFirst {
+        delete fileTree('build/generated')
+    }
+    dependsOn 'generateProto'
 }
 
 test {
