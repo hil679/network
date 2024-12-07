@@ -1,2 +1,4 @@
 include 'hello_grpc'
+include 'hello_grpc:src:main:java'
+findProject(':hello_grpc:src:main:java')?.name = 'java'
 

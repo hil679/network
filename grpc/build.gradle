@@ -13,6 +13,8 @@ dependencies {
     runtimeOnly 'io.grpc:grpc-netty-shaded:1.68.1'
     implementation 'io.grpc:grpc-protobuf:1.68.1'
     implementation 'io.grpc:grpc-stub:1.68.1'
+    implementation "com.google.protobuf:protobuf-java-util:3.25.5"
+    implementation "com.google.protobuf:protobuf-java:3.25.5"
     compileOnly 'org.apache.tomcat:annotations-api:6.0.53' // necessary for Java 9+
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
@@ -28,6 +30,7 @@ protobuf {
             artifact = 'io.grpc:protoc-gen-grpc-java:1.68.1'
         }
     }
+//    generatedFilesBaseDir = "/Users/ihyein/hil/project/network/grpc/hello_grpc/src"
     generateProtoTasks {
         all()*.plugins {
             grpc {}
