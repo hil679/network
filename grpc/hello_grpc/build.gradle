@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'com.google.protobuf' version '0.9.4'
+}
+
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    runtimeOnly 'io.grpc:grpc-netty-shaded:1.68.1'
+    implementation 'io.grpc:grpc-protobuf:1.68.1'
+    implementation 'io.grpc:grpc-stub:1.68.1'
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53' // necessary for Java 9+
+    implementation "com.google.protobuf:protobuf-java-util:3.25.5"
+    implementation "com.google.protobuf:protobuf-java:3.25.5"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+protobuf {
+    protoc {
+        if (osdetector.os == "osx") {
+            artifact = 'com.google.protobuf:protoc:3.25.5:osx-x86_64'
+        } else {
+            artifact = 'com.google.protobuf:protoc:3.25.5'
+        }
+//        artifact = "com.google.protobuf:protoc:3.25.5"
+    }
+    plugins {
+        grpc {
+            if (project.hasProperty('protoc_platform')) {
+                artifact = "io.grpc:protoc-gen-grpc-java:1.68.1:osx-x86_64"
+            } else {
+                artifact = "io.grpc:protoc-gen-grpc-java:1.68.1"
+            }
+        }
+//        grpc {
+//            artifact = 'io.grpc:protoc-gen-grpc-java:1.68.1'
+//        }
+    }
+    generatedFilesBaseDir = "/Users/ihyein/hil/project/network/grpc/hello_grpc/src"
+    generateProtoTasks {
+//        all()*.plugins {
+//            grpc {}
+//        }
+        all().each { task ->
+            task.builtins {
+                java {
+                    outputSubDir = 'java' // Protobuf 메시지 클래스 출력 디렉토리 설정
+                }
+            }
+            task.plugins {
+                grpc {
+                    outputSubDir = 'java' // gRPC 코드 출력 디렉토리 설정
+                }
+            }
+        }
+    }
+}
+sourceSets {
+    main {
+        proto {
+            srcDir 'src/main/java/Lecture_07_gRPC_Source_Code/lec_07_prg_01_hello_gRPC' // 원본 proto 파일 위치
+        }
+    }
+}
+test {
+    useJUnitPlatform()
+}

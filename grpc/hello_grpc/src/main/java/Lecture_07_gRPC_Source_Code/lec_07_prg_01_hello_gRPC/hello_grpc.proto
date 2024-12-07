@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package Lecture_07_gRPC_Source_Code.lec_07_prg_01_hello_gRPC;
+
 service MyService {
   rpc MyFunction(MyNumber) returns (MyNumber) {}
 }
