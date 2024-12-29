@@ -45,15 +45,7 @@ public class server {
         try {
             server.awaitTermination();
         } catch (InterruptedException e) {
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.out.println("Shutting down server...");
-                server.shutdown();
-            }));
-        }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Shutting down server...");
             server.shutdown();
-        }));
+        }
     }
 }
